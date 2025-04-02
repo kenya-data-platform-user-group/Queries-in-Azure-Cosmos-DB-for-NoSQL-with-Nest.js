@@ -4,7 +4,6 @@ interface TComments {
     content: string;
     createdAt: Date;
     updatedAt: Date;
-
 }
 
 export class Blog {

@@ -15,6 +15,19 @@ export class BlogsService implements OnModuleInit {
     this.blogsContainer = this.databaseService.blogsContainer;
   }
 
+  async createMany(createBlogDtos: CreateBlogDto[]): Promise<Blog[]> {
+    const newBlogs: Blog[] = createBlogDtos.map((createBlogDto) => ({
+      ...createBlogDto,
+      id: crypto.randomUUID(),
+      authorId: crypto.randomUUID(),
+      isPublished: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }));
+    const { resource } = await this.blogsContainer.items.create(newBlogs);
+    return resource as unknown as Blog[];
+  }
+
   async create(createBlogDto: CreateBlogDto) {
     const newBlog: Blog = {
       ...createBlogDto,
@@ -38,25 +51,34 @@ export class BlogsService implements OnModuleInit {
     return resources;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<Blog> {
     const { resource } = await this.blogsContainer.item(id, id).read();
-    return resource;
+    if (!resource) {
+      throw new NotFoundException(`Blog with id: ${id} not found`);
+    }
+    return resource as unknown as Blog;
   }
 
-  async updateBlog(id: string, updateBlogDto: UpdateBlogDto) {
+  async updateBlog(id: string, updateBlogDto: UpdateBlogDto): Promise<Blog> {    
     const { resource } = await this.blogsContainer.item(id, id).replace({
       id,
+      updatedAt: new Date(),
       ...updateBlogDto,
     });
-    return resource;
+    
+    if (!resource) {
+      throw new NotFoundException(`Blog with id: ${id} not found`);
+    }
+    
+    return resource as unknown as Blog;
   }
 
   async addComment(
     id: string,
     comment: { authorName: string; content: string },
-  ) {
+  ) : Promise<Blog> {
     const { resource } = await this.blogsContainer.item(id, id).read();
-    const blog = resource as Blog;
+    const blog = resource as unknown as Blog;
     if (!blog) {
       throw new NotFoundException(`Blog not found with id: ${id}`);
     }
@@ -77,11 +99,12 @@ export class BlogsService implements OnModuleInit {
     const { resource: updatedBlog } = await this.blogsContainer
       .item(id, id)
       .replace(blog);
-    return updatedBlog;
+    return updatedBlog as unknown as Blog;
   }
+
   async removeComment(blogId: string, commentId: string) {
     const { resource } = await this.blogsContainer.item(blogId, blogId).read();
-    const blog = resource as Blog;
+    const blog = resource as unknown as Blog;
 
     if (!blog) {
       throw new NotFoundException('Blog not found');
@@ -98,7 +121,7 @@ export class BlogsService implements OnModuleInit {
     return updatedBlog;
   }
 
-  async updateComment(blogId: string, commentId: string, content: string) {
+  async updateComment(blogId: string, commentId: string, content: string): Promise<Blog> {
     const { resource } = await this.blogsContainer.item(blogId, blogId).read();
     const blog = resource as Blog;
 
@@ -122,8 +145,7 @@ export class BlogsService implements OnModuleInit {
     const { resource: updatedBlog } = await this.blogsContainer
       .item(blogId, blogId)
       .replace(blog);
-
-    return updatedBlog;
+    return updatedBlog as unknown as Blog;
   }
 
   async remove(id: string) {
