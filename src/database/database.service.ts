@@ -13,8 +13,7 @@ import { ConfigService } from '@nestjs/config';
 export class DatabaseService implements OnModuleInit {
   private readonly client: CosmosClient;
   private database: Database;
-  public userContainer: Container;
-  public memoriesContainer: Container;
+  public blogsContainer: Container;
 
   constructor(private configSerVice: ConfigService) {
     this.client = new CosmosClient({
@@ -45,16 +44,8 @@ export class DatabaseService implements OnModuleInit {
 
   private async initContainers() {
 
-    const { container: userContainer } = await this.database.containers.createIfNotExists({
-      id: 'users',
-      partitionKey: {
-        paths: ['/id'],
-        version: PartitionKeyDefinitionVersion.V2,
-        kind: PartitionKeyKind.Hash,
-      },
-    });
-    const { container: memoriesContainer } = await this.database.containers.createIfNotExists({
-      id: 'memories',
+    const { container: blogsContainer } = await this.database.containers.createIfNotExists({
+      id: 'blogs',
       partitionKey: {
         paths: ['/id'],
         version: PartitionKeyDefinitionVersion.V2,
@@ -62,9 +53,7 @@ export class DatabaseService implements OnModuleInit {
       },
     });
 
-    this.userContainer = userContainer;
-    this.memoriesContainer = memoriesContainer;
-    console.log(`userContainer with id : ${userContainer.id} created`);
-    console.log(`memoriesContainer with id : ${memoriesContainer.id} created`);
+    this.blogsContainer = blogsContainer;
+    console.log(`userContainer with id : ${blogsContainer.id} created`);
   }
 }
