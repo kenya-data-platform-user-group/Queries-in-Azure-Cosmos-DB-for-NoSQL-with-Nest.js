@@ -1,0 +1,27 @@
+
+### Create a new user
+POST http://localhost:8000/users
+Content-Type: application/json
+
+{
+  "name": "Kevin Comba",
+  "email": "example@email.com"
+}
+
+### Get all users
+GET http://localhost:8000/users
+
+### Get a user by ID
+GET http://localhost:8000/users/193d758b-f943-4fe4-aac8-e96e5f162b42
+
+### Update a user by ID
+PATCH  http://localhost:8000/users/193d758b-f943-4fe4-aac8-e96e5f162b43
+Content-Type: application/json
+
+{
+  "name": "2Kevin Comba",
+  "email": "example2@email.com"
+}
+
+### Delete a user by ID
+DELETE http://localhost:8000/users/1
