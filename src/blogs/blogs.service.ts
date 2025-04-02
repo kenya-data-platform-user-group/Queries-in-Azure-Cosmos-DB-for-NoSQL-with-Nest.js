@@ -15,19 +15,35 @@ export class BlogsService implements OnModuleInit {
     this.blogsContainer = this.databaseService.blogsContainer;
   }
 
-  async createMany(createBlogDtos: CreateBlogDto[]): Promise<Blog[]> {
-    const newBlogs: Blog[] = createBlogDtos.map((createBlogDto) => ({
-      ...createBlogDto,
-      id: crypto.randomUUID(),
-      isPublished: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }));
-    const { resource } = await this.blogsContainer.items.create(newBlogs);
-    return resource as unknown as Blog[];
+  async createManyBlogs(blogDataItems: CreateBlogDto[]): Promise<Blog[]> {
+    // Process in smaller batches to prevent timeout
+    const batchSize = 20;
+    const allBlogs: Blog[] = [];
+
+    // Process in batches
+    for (let i = 0; i < blogDataItems.length; i += batchSize) {
+      const batch = blogDataItems.slice(i, i + batchSize);
+      const batchBlogs = await Promise.all(
+        batch.map(async (blogData) => {
+          const newBlog: Blog = {
+            ...blogData,
+            id: crypto.randomUUID(),
+            isPublished: false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+          const { resource } = await this.blogsContainer.items.create(newBlog);
+          return resource as unknown as Blog;
+        })
+      );
+
+      allBlogs.push(...batchBlogs);
+    }
+
+    return allBlogs;
   }
 
-  async create(createBlogDto: CreateBlogDto) {
+  async createBlog(createBlogDto: CreateBlogDto) {
     const newBlog: Blog = {
       ...createBlogDto,
       id: crypto.randomUUID(),
@@ -39,7 +55,7 @@ export class BlogsService implements OnModuleInit {
     return resource;
   }
 
-  async findAll() {
+  async findAllBlogs() {
     const querySpec = {
       query: 'SELECT * FROM c',
     };
@@ -49,7 +65,7 @@ export class BlogsService implements OnModuleInit {
     return resources;
   }
 
-  async findOne(id: string): Promise<Blog> {
+  async findOneBlog(id: string): Promise<Blog> {
     const { resource } = await this.blogsContainer.item(id, id).read();
     if (!resource) {
       throw new NotFoundException(`Blog with id: ${id} not found`);
@@ -146,12 +162,26 @@ export class BlogsService implements OnModuleInit {
     return updatedBlog as unknown as Blog;
   }
 
-  async remove(id: string) {
+  async removeBlogViaId(id: string) {
     await this.blogsContainer.item(id, id).delete();
     return { message: `Blog with id : ${id} deleted successfully` };
   }
 
-  async MockBlogs() {
+  async removeAllBlogs() {
+    const querySpec = {
+      query: 'SELECT * FROM c',
+    };
+    const { resources } = await this.blogsContainer.items
+      .query(querySpec)
+      .fetchAll();
+    const deletePromises = resources.map((blog) =>
+      this.blogsContainer.item(blog.id, blog.id).delete()
+    );
+    await Promise.all(deletePromises);
+    return { message: 'All blogs deleted successfully' };
+  }
+
+  async createMockBlogs() {
     const blogs: CreateBlogDto[] = [
       {
         title: "Understanding Azure Cosmos DB - Part 1",
@@ -295,10 +325,12 @@ export class BlogsService implements OnModuleInit {
       }
     ];
 
-    const res = this.createMany(blogs);
+    console.log("first");
+
+    const res = this.createManyBlogs(blogs);
     if (!res) {
       throw new NotFoundException('Blogs not found');
-    }    
+    }
     return res as unknown as Blog[];
   }
 }

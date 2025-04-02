@@ -1,4 +1,7 @@
 
+### mock blogs
+GET http://localhost:8000/blogs/mock
+
 ### Create a new user
 POST http://localhost:8000/users
 Content-Type: application/json
@@ -9,7 +12,7 @@ Content-Type: application/json
 }
 
 ### Get all users
-GET http://localhost:8000/users
+GET http://localhost:8000/blogs
 
 ### Get a user by ID
 GET http://localhost:8000/users/193d758b-f943-4fe4-aac8-e96e5f162b42
