@@ -3,6 +3,8 @@ interface TComments {
     authorName: string;
     content: string;
     createdAt: Date;
+    updatedAt: Date;
+
 }
 
 export class Blog {
@@ -11,7 +13,7 @@ export class Blog {
     content: string;
     authorId: string;
     comments?: TComments[];
-    tags: string[];;
+    tags: string[];
     isPublished?: boolean;
     publishedAt?: Date;
     createdAt: Date;

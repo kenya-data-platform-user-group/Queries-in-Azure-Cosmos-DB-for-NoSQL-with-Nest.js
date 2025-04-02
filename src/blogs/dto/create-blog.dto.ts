@@ -1,22 +1,29 @@
-import { IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import {
+  IsArray,
+  IsBoolean,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateBlogDto {
-    @IsString()
-    @IsNotEmpty()
-    title: string;
+  @IsString()
+  @IsNotEmpty()
+  title: string;
 
-    @IsString()
-    @IsNotEmpty()
-    content: string;
+  @IsString()
+  @IsNotEmpty()
+  content: string;
 
-    @IsString()
-    @IsUUID()
-    authorId: string;
+  @IsString()
+  @IsUUID()
+  authorId: string;
 
-    @IsBoolean()
-    @IsOptional()
-    isPublished?: boolean;
+  @IsBoolean()
+  @IsOptional()
+  isPublished?: boolean;
 
-    @IsArray()
-    tags: string[];
+  @IsArray()
+  tags: string[];
 }

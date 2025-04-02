@@ -43,15 +43,15 @@ export class DatabaseService implements OnModuleInit {
   }
 
   private async initContainers() {
-
-    const { container: blogsContainer } = await this.database.containers.createIfNotExists({
-      id: 'blogs',
-      partitionKey: {
-        paths: ['/id'],
-        version: PartitionKeyDefinitionVersion.V2,
-        kind: PartitionKeyKind.Hash,
-      },
-    });
+    const { container: blogsContainer } =
+      await this.database.containers.createIfNotExists({
+        id: 'blogs',
+        partitionKey: {
+          paths: ['/id'],
+          version: PartitionKeyDefinitionVersion.V2,
+          kind: PartitionKeyKind.Hash,
+        },
+      });
 
     this.blogsContainer = blogsContainer;
     console.log(`userContainer with id : ${blogsContainer.id} created`);
