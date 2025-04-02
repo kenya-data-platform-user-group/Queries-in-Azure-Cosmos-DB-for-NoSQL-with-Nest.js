@@ -19,7 +19,6 @@ export class BlogsService implements OnModuleInit {
     const newBlogs: Blog[] = createBlogDtos.map((createBlogDto) => ({
       ...createBlogDto,
       id: crypto.randomUUID(),
-      authorId: crypto.randomUUID(),
       isPublished: false,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -32,7 +31,6 @@ export class BlogsService implements OnModuleInit {
     const newBlog: Blog = {
       ...createBlogDto,
       id: crypto.randomUUID(),
-      authorId: crypto.randomUUID(),
       isPublished: false,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -59,24 +57,24 @@ export class BlogsService implements OnModuleInit {
     return resource as unknown as Blog;
   }
 
-  async updateBlog(id: string, updateBlogDto: UpdateBlogDto): Promise<Blog> {    
+  async updateBlog(id: string, updateBlogDto: UpdateBlogDto): Promise<Blog> {
     const { resource } = await this.blogsContainer.item(id, id).replace({
       id,
       updatedAt: new Date(),
       ...updateBlogDto,
     });
-    
+
     if (!resource) {
       throw new NotFoundException(`Blog with id: ${id} not found`);
     }
-    
+
     return resource as unknown as Blog;
   }
 
   async addComment(
     id: string,
     comment: { authorName: string; content: string },
-  ) : Promise<Blog> {
+  ): Promise<Blog> {
     const { resource } = await this.blogsContainer.item(id, id).read();
     const blog = resource as unknown as Blog;
     if (!blog) {
@@ -152,4 +150,156 @@ export class BlogsService implements OnModuleInit {
     await this.blogsContainer.item(id, id).delete();
     return { message: `Blog with id : ${id} deleted successfully` };
   }
+
+  async MockBlogs() {
+    const blogs: CreateBlogDto[] = [
+      {
+        title: "Understanding Azure Cosmos DB - Part 1",
+        content: "An introduction to the capabilities and features of Azure Cosmos DB...",
+        authorId: crypto.randomUUID(),
+        isPublished: true,
+        tags: ["Azure", "CosmosDB", "NoSQL"]
+      },
+      {
+        title: "Understanding Azure Cosmos DB - Part 2",
+        content: "Diving deeper into partitioning and indexing strategies in Cosmos DB...",
+        authorId: crypto.randomUUID(),
+        isPublished: true,
+        tags: ["Azure", "CosmosDB", "Database"]
+      },
+      {
+        title: "Scaling Your Application with Cosmos DB",
+        content: "Learn how to scale your applications using Azure Cosmos DB's global distribution...",
+        authorId: crypto.randomUUID(),
+        isPublished: false,
+        tags: ["Scaling", "Cloud", "Azure"]
+      },
+      {
+        title: "Denormalization in NoSQL Databases",
+        content: "A guide to denormalization techniques including embedding related data in documents...",
+        authorId: crypto.randomUUID(),
+        isPublished: true,
+        tags: ["NoSQL", "Denormalization", "Database Design"]
+      },
+      {
+        title: "Cosmos DB vs. Traditional SQL Databases",
+        content: "Comparing the performance and scalability of Azure Cosmos DB with SQL databases...",
+        authorId: crypto.randomUUID(),
+        isPublished: true,
+        tags: ["Comparison", "SQL", "NoSQL"]
+      },
+      {
+        title: "Optimizing Query Performance in Cosmos DB",
+        content: "Tips and tricks for enhancing query performance in Azure Cosmos DB using proper indexing...",
+        authorId: crypto.randomUUID(),
+        isPublished: false,
+        tags: ["Performance", "Query", "Indexing"]
+      },
+      {
+        title: "Implementing Aggregates in Cosmos DB",
+        content: "How to perform aggregate functions like COUNT, SUM, AVG, MAX, and MIN in Cosmos DB...",
+        authorId: crypto.randomUUID(),
+        isPublished: true,
+        tags: ["Aggregates", "CosmosDB", "NoSQL"]
+      },
+      {
+        title: "Building a Scalable Blog with Cosmos DB",
+        content: "A practical example of designing a scalable blog application using Azure Cosmos DB...",
+        authorId: crypto.randomUUID(),
+        isPublished: true,
+        tags: ["Blog", "Scalability", "Azure"]
+      },
+      {
+        title: "Cosmos DB Data Modeling Best Practices",
+        content: "Explore best practices for data modeling in Azure Cosmos DB to ensure optimal performance...",
+        authorId: crypto.randomUUID(),
+        isPublished: false,
+        tags: ["Data Modeling", "Best Practices", "CosmosDB"]
+      },
+      {
+        title: "Leveraging Multi-Model Capabilities in Cosmos DB",
+        content: "Understanding how to use multiple data models in Azure Cosmos DB for versatile applications...",
+        authorId: crypto.randomUUID(),
+        isPublished: true,
+        tags: ["Multi-Model", "NoSQL", "Azure"]
+      },
+      {
+        title: "Migrating from SQL to Cosmos DB",
+        content: "Step-by-step guide on how to migrate your SQL database to Azure Cosmos DB...",
+        authorId: crypto.randomUUID(),
+        isPublished: false,
+        tags: ["Migration", "SQL", "CosmosDB"]
+      },
+      {
+        title: "Cosmos DB Security Fundamentals",
+        content: "An overview of security features in Azure Cosmos DB to protect your data...",
+        authorId: crypto.randomUUID(),
+        isPublished: true,
+        tags: ["Security", "Data Protection", "Azure"]
+      },
+      {
+        title: "Serverless with Cosmos DB",
+        content: "Learn how to integrate Azure Functions with Cosmos DB for a serverless architecture...",
+        authorId: crypto.randomUUID(),
+        isPublished: true,
+        tags: ["Serverless", "Azure Functions", "CosmosDB"]
+      },
+      {
+        title: "Understanding Cosmos DB Consistency Models",
+        content: "An in-depth look at the consistency models offered by Azure Cosmos DB and when to use them...",
+        authorId: crypto.randomUUID(),
+        isPublished: false,
+        tags: ["Consistency", "Database", "CosmosDB"]
+      },
+      {
+        title: "Real-time Analytics with Cosmos DB",
+        content: "How to implement real-time analytics and reporting with Azure Cosmos DB...",
+        authorId: crypto.randomUUID(),
+        isPublished: true,
+        tags: ["Analytics", "Real-time", "NoSQL"]
+      },
+      {
+        title: "Using Cosmos DB with Node.js",
+        content: "A tutorial on how to integrate Azure Cosmos DB into your Node.js applications...",
+        authorId: crypto.randomUUID(),
+        isPublished: true,
+        tags: ["Node.js", "Tutorial", "CosmosDB"]
+      },
+      {
+        title: "Performance Tuning in Cosmos DB",
+        content: "Techniques and strategies to optimize the performance of your Cosmos DB instance...",
+        authorId: crypto.randomUUID(),
+        isPublished: false,
+        tags: ["Performance", "Tuning", "Azure"]
+      },
+      {
+        title: "Cosmos DB and IoT: A Match Made in Cloud",
+        content: "Explore how Azure Cosmos DB can be used effectively in IoT scenarios...",
+        authorId: crypto.randomUUID(),
+        isPublished: true,
+        tags: ["IoT", "Cloud", "CosmosDB"]
+      },
+      {
+        title: "Cost Management in Cosmos DB",
+        content: "Understanding pricing, cost optimization, and scaling strategies in Azure Cosmos DB...",
+        authorId: crypto.randomUUID(),
+        isPublished: false,
+        tags: ["Cost", "Management", "Azure"]
+      },
+      {
+        title: "Advanced Query Techniques in Cosmos DB",
+        content: "Learn about advanced querying capabilities, including subqueries and joins within a single container...",
+        authorId: crypto.randomUUID(),
+        isPublished: true,
+        tags: ["Advanced Query", "Subqueries", "CosmosDB"]
+      }
+    ];
+
+    const res = this.createMany(blogs);
+    if (!res) {
+      throw new NotFoundException('Blogs not found');
+    }    
+    return res as unknown as Blog[];
+  }
 }
+
