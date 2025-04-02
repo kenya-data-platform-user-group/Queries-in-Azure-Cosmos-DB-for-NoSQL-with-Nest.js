@@ -174,11 +174,36 @@ export class BlogsService implements OnModuleInit {
     const { resources } = await this.blogsContainer.items
       .query(querySpec)
       .fetchAll();
-    const deletePromises = resources.map((blog) =>
-      this.blogsContainer.item(blog.id, blog.id).delete()
+
+      const blogsToDelete = resources.filter((blog) => blog.id);
+    if (blogsToDelete.length === 0) {
+      return { message: 'No blogs found to delete' };
+    }
+    const blogResource = blogsToDelete.map((blog) => ({
+      id: blog.id,
+      partitionKey: blog.id,
+    }));
+    console.log(blogResource);
+
+    // Use Promise.allSettled to handle multiple deletions    
+    // Handle each deletion individually to prevent complete failure
+    const results = await Promise.allSettled(
+      blogResource.map(async (blog) => {
+        try {
+          await this.blogsContainer.item(blog.id, blog.partitionKey).delete();
+          return { id: blog.id, success: true };
+        } catch (error) {
+          console.error(`Failed to delete blog ${blog.id}:`, error.message);
+          return { id: blog.id, success: false, error: error.message };
+        }
+      })
     );
-    await Promise.all(deletePromises);
-    return { message: 'All blogs deleted successfully' };
+    
+    const successCount = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
+    return { 
+      message: `${successCount} of ${resources.length} blogs deleted successfully`,
+      details: results.map(r => r.status === 'fulfilled' ? r.value : { success: false, error: r.reason })
+    };
   }
 
   async createMockBlogs() {

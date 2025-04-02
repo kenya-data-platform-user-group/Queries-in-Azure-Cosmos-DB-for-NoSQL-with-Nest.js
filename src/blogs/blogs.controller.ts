@@ -24,13 +24,7 @@ export class BlogsController {
     return this.blogsService.createManyBlogs(createBlogDtos);
   }
 
-  @Post(':id/comments')
-  createComment(
-    @Param('id') id: string,
-    @Body() createCommentDto: CreateCommentDTO,
-  ) {
-    return this.blogsService.addComment(id, createCommentDto);
-  }
+
 
   @Get('/mock')
   createMockBlogs() {
@@ -40,6 +34,19 @@ export class BlogsController {
   @Get()
   findAll() {
     return this.blogsService.findAllBlogs();
+  }
+
+  @Delete('all-blogs')
+  removeAllBlogs() {
+    return this.blogsService.removeAllBlogs();
+  }
+
+  @Post(':id/comments')
+  createComment(
+    @Param('id') id: string,
+    @Body() createCommentDto: CreateCommentDTO,
+  ) {
+    return this.blogsService.addComment(id, createCommentDto);
   }
 
   @Get(':id')
@@ -74,8 +81,4 @@ export class BlogsController {
     return this.blogsService.removeComment(blogId, commentId);
   }
 
-  @Delete('all-blogs')
-  removeAllBlogs() {
-    return this.blogsService.removeAllBlogs();
-  }
 }

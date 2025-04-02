@@ -38,7 +38,7 @@ Content-Type: application/json
 ]
 
 ### Add a comment to a blog
-POST http://localhost:8000/blogs/your-blog-id-here/comments
+POST http://localhost:8000/blogs/b41e2e67-e3c7-4a0f-a21c-3aeb600d8c9f/comments
 Content-Type: application/json
 
 {
@@ -47,7 +47,7 @@ Content-Type: application/json
 }
 
 ### Update a blog
-PATCH http://localhost:8000/blogs/your-blog-id-here
+PATCH http://localhost:8000/blogs/b41e2e67-e3c7-4a0f-a21c-3aeb600d8c9f
 Content-Type: application/json
 
 {
