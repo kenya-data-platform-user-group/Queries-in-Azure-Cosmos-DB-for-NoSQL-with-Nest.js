@@ -1,8 +1,78 @@
-
-### mock blogs
+### Create mock blogs
 GET http://localhost:8000/blogs/mock
 
-### Create a new user
+### Get all blogs
+GET http://localhost:8000/blogs
+
+### Get a blog by ID
+GET http://localhost:8000/blogs/your-blog-id-here
+
+### Create a new blog
+POST http://localhost:8000/blogs
+Content-Type: application/json
+
+{
+  "title": "New Blog",
+  "content": "This is the content of my new blog",
+  "authorId": "some-uuid-here",
+  "tags": ["tag1", "tag2"]
+}
+
+### Create multiple blogs
+POST http://localhost:8000/blogs/many
+Content-Type: application/json
+
+[
+  {
+    "title": "Blog 1",
+    "content": "Content for blog 1",
+    "authorId": "some-uuid-here",
+    "tags": ["tag1", "tag2"]
+  },
+  {
+    "title": "Blog 2",
+    "content": "Content for blog 2",
+    "authorId": "some-uuid-here",
+    "tags": ["tag3", "tag4"]
+  }
+]
+
+### Add a comment to a blog
+POST http://localhost:8000/blogs/your-blog-id-here/comments
+Content-Type: application/json
+
+{
+  "authorName": "Comment Author",
+  "content": "This is a comment on the blog"
+}
+
+### Update a blog
+PATCH http://localhost:8000/blogs/your-blog-id-here
+Content-Type: application/json
+
+{
+  "title": "Updated Blog Title",
+  "content": "Updated blog content"
+}
+
+### Update a comment
+PATCH http://localhost:8000/blogs/your-blog-id-here/comments/your-comment-id-here
+Content-Type: application/json
+
+{
+  "content": "Updated comment content"
+}
+
+### Delete a blog
+DELETE http://localhost:8000/blogs/your-blog-id-here
+
+### Delete a comment
+DELETE http://localhost:8000/blogs/your-blog-id-here/comments/your-comment-id-here
+
+### Delete all blogs
+DELETE http://localhost:8000/blogs/all-blogs
+
+### Create a new user (existing route)
 POST http://localhost:8000/users
 Content-Type: application/json
 
@@ -11,14 +81,14 @@ Content-Type: application/json
   "email": "example@email.com"
 }
 
-### Get all users
-GET http://localhost:8000/blogs
+### Get all users (existing route)
+GET http://localhost:8000/users
 
-### Get a user by ID
+### Get a user by ID (existing route)
 GET http://localhost:8000/users/193d758b-f943-4fe4-aac8-e96e5f162b42
 
-### Update a user by ID
-PATCH  http://localhost:8000/users/193d758b-f943-4fe4-aac8-e96e5f162b43
+### Update a user by ID (existing route)
+PATCH http://localhost:8000/users/193d758b-f943-4fe4-aac8-e96e5f162b43
 Content-Type: application/json
 
 {
@@ -26,5 +96,5 @@ Content-Type: application/json
   "email": "example2@email.com"
 }
 
-### Delete a user by ID
+### Delete a user by ID (existing route)
 DELETE http://localhost:8000/users/1

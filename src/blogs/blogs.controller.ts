@@ -18,13 +18,19 @@ export class BlogsController {
   create(@Body() createBlogDto: CreateBlogDto) {
     return this.blogsService.createBlog(createBlogDto);
   }
-  // @Post(':id/comments')
-  // createComment(
-  //   @Param('id') id: string,
-  //   @Body() createCommentDto: CreateCommentDTO,
-  // ) {
-  //   return this.blogsService.createComment(id, createCommentDto);
-  // }
+
+  @Post('many')
+  createMany(@Body() createBlogDtos: CreateBlogDto[]) {
+    return this.blogsService.createManyBlogs(createBlogDtos);
+  }
+
+  @Post(':id/comments')
+  createComment(
+    @Param('id') id: string,
+    @Body() createCommentDto: CreateCommentDTO,
+  ) {
+    return this.blogsService.addComment(id, createCommentDto);
+  }
 
   @Get('/mock')
   createMockBlogs() {
@@ -46,9 +52,26 @@ export class BlogsController {
     return this.blogsService.updateBlog(id, updateBlogDto);
   }
 
+  @Patch(':blogId/comments/:commentId')
+  updateComment(
+    @Param('blogId') blogId: string,
+    @Param('commentId') commentId: string,
+    @Body() updateCommentDto: UpdateCommentDto,
+  ) {
+    return this.blogsService.updateComment(blogId, commentId, updateCommentDto.content);
+  }
+
   @Delete(':id')
   removeABlog(@Param('id') id: string) {
     return this.blogsService.removeBlogViaId(id);
+  }
+
+  @Delete(':blogId/comments/:commentId')
+  removeComment(
+    @Param('blogId') blogId: string,
+    @Param('commentId') commentId: string,
+  ) {
+    return this.blogsService.removeComment(blogId, commentId);
   }
 
   @Delete('all-blogs')
