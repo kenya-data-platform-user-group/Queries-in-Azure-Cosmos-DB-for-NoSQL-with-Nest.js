@@ -18,6 +18,5 @@ export class CreateBlogDto {
     isPublished?: boolean;
 
     @IsArray()
-    @IsOptional()
-    tags?: string[];
+    tags: string[];
 }

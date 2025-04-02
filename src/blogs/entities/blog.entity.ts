@@ -10,8 +10,8 @@ export class Blog {
     title: string;
     content: string;
     authorId: string;
-    comments?: string[];
-    tags?: TComments[];
+    comments?: TComments[];
+    tags: string[];;
     isPublished?: boolean;
     publishedAt?: Date;
     createdAt: Date;
