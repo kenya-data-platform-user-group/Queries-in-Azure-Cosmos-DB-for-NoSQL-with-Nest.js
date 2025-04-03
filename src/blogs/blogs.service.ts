@@ -457,8 +457,8 @@ export class BlogsService implements OnModuleInit {
         FROM c IN b.comments
         WHERE c.createdAt >= @cutoffDate
       ) AS recentComments
-    FROM blogs b
-    WHERE ARRAY_LENGTH(
+      FROM blogs b
+      WHERE ARRAY_LENGTH(
       ARRAY(
         SELECT c
         FROM c IN b.comments
@@ -479,13 +479,13 @@ export class BlogsService implements OnModuleInit {
     const querySpec: SqlQuerySpec = {
       query: `
       SELECT 
-      b.id,
-      b.title,
+        b.id,
+        b.title,
       ARRAY_LENGTH(b.comments) AS commentCount
-    FROM blogs b
-    WHERE IS_DEFINED(b.comments) AND ARRAY_LENGTH(b.comments) > 0
-    ORDER BY ARRAY_LENGTH(b.comments) DESC
-    OFFSET 0 LIMIT @limit
+      FROM blogs b
+      WHERE IS_DEFINED(b.comments) AND ARRAY_LENGTH(b.comments) > 0
+      ORDER BY ARRAY_LENGTH(b.comments) DESC
+      OFFSET 0 LIMIT @limit
       `,
       parameters: [
         { name: '@limit', value: limit }
