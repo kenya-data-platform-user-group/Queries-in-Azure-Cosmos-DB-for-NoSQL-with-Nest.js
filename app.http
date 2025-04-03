@@ -78,5 +78,10 @@ DELETE http://localhost:8000/blogs/all-blogs
 GET http://localhost:8000/blogs/with-comments
 
 ### Get a comment by ID
-# GET http://localhost:8000/blogs/72a26bff-57f5-43e3-976a-827de4abda8b/comments/867d6f4e-1a62-4c57-a997-9c02f93ea9e3
 GET http://localhost:8000/blogs/72a26bff-57f5-43e3-976a-827de4abda8b/comments/867d6f4e-1a62-4c57-a997-9c02f93ea9e3
+
+### Get Blogs with Recent Comments
+GET http://localhost:8000/blogs/recent-comments?daysAgo=1
+
+### Get Most Active Blog Posts (By Comment Count)
+GET http://localhost:8000/blogs/most-active?top=5

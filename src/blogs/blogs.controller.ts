@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
 import {
@@ -59,7 +61,23 @@ export class BlogsController {
     return this.blogsService.removeAllBlogs();
   }
 
+   //Find Blogs with Recent Comments
+  // url: /blogs/recent-comments?daysAgo=5  
+  @Get('recent-comments')
+  findBlogsWithRecentComments(
+    @Query('daysAgo', ParseIntPipe) daysAgo?: number,
+  ) {
+    return this.blogsService.getBlogsWithRecentComments(daysAgo);    
+  }
 
+  //Find Most Active Blog Posts (By Comment Count)
+  // url: /blogs/most-active?top=5
+  @Get('most-active')
+  findMostActiveBlogs(
+    @Query('top', ParseIntPipe) top?: number,
+  ) {
+    return this.blogsService.getMostActiveBlogs(top);
+  }
 
   // get all comments from a blog
   @Post(':id/comments')
@@ -125,4 +143,5 @@ export class BlogsController {
   ) {
     return this.blogsService.getCommentById(blogId, commentId);
   }
+
 }

@@ -437,18 +437,38 @@ export class BlogsService implements OnModuleInit {
 
   //Find Blogs with Recent Comments
   async getBlogsWithRecentComments(daysAgo: number = 7) {
+    // 1. Uses the ARRAY() constructor with a subquery to collect only the recent comments
+    // 2. Returns a single row per blog with all matching comments in a recentComments array
+    // 3. Uses ARRAY_LENGTH() to filter out blogs with no recent comments
+    // 4. Properly names the returned field as recentComments (plural) to indicate it's an array
+    
+    const cutOffDate = new Date();
+    cutOffDate.setDate(cutOffDate.getDate() - daysAgo || 7);
+    const cutoffDateString = cutOffDate.toISOString();
+
     const querySpec: SqlQuerySpec = {
       query: `
-      SELECT 
-        b.id AS blogId,
-        b.title,
-        b.content,
-        c AS recentComment
-      FROM blogs b
-      JOIN c IN b.comments
-      WHERE c.createdAt >= GetCurrentDateTime() - ${daysAgo * 24 * 60 * 60}
-      ORDER BY c.createdAt DESC
-      `
+     SELECT 
+      b.id AS blogId,
+      b.title,
+      b.content,
+      ARRAY(
+        SELECT c
+        FROM c IN b.comments
+        WHERE c.createdAt >= @cutoffDate
+      ) AS recentComments
+    FROM blogs b
+    WHERE ARRAY_LENGTH(
+      ARRAY(
+        SELECT c
+        FROM c IN b.comments
+        WHERE c.createdAt >= @cutoffDate
+      )
+    ) > 0
+      `,
+      parameters: [
+        { name: '@cutoffDate', value: cutoffDateString }
+      ]
     };
     const { resources } = await this.blogsContainer.items.query(querySpec).fetchAll();
     return resources;
@@ -459,16 +479,17 @@ export class BlogsService implements OnModuleInit {
     const querySpec: SqlQuerySpec = {
       query: `
       SELECT 
-        b.id,
-        b.title,
-        COUNT(1) AS commentCount,
-        b.comments
-      FROM blogs b
-      JOIN c IN b.comments
-      GROUP BY b.id, b.title, b.comments
-      ORDER BY commentCount DESC
-      OFFSET 0 LIMIT ${limit}
-      `
+      b.id,
+      b.title,
+      ARRAY_LENGTH(b.comments) AS commentCount
+    FROM blogs b
+    WHERE IS_DEFINED(b.comments) AND ARRAY_LENGTH(b.comments) > 0
+    ORDER BY ARRAY_LENGTH(b.comments) DESC
+    OFFSET 0 LIMIT @limit
+      `,
+      parameters: [
+        { name: '@limit', value: limit }
+      ]
     };
     const { resources } = await this.blogsContainer.items.query(querySpec).fetchAll();
     return resources;
