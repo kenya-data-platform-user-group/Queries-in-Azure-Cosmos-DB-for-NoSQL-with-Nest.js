@@ -8,11 +8,25 @@ import {
   Delete,
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
-import { CreateBlogDto, UpdateBlogDto, CreateCommentDTO, UpdateCommentDto } from './dto';
+import {
+  CreateBlogDto,
+  UpdateBlogDto,
+  CreateCommentDTO,
+  UpdateCommentDto,
+} from './dto';
 
 @Controller('blogs')
 export class BlogsController {
-  constructor(private readonly blogsService: BlogsService) { }
+  constructor(private readonly blogsService: BlogsService) {}
+
+  @Get('comments-in-blogs')
+  getAllCommentsInBlogs() {
+    return this.blogsService.getAllCommentsInBlogs();
+  }
+  @Get('with-comments')
+  getAllBlogsWithComments() {
+    return this.blogsService.getAllBlogsWithComments();
+  } 
 
   @Post()
   create(@Body() createBlogDto: CreateBlogDto) {
@@ -23,8 +37,6 @@ export class BlogsController {
   createMany(@Body() createBlogDtos: CreateBlogDto[]) {
     return this.blogsService.createManyBlogs(createBlogDtos);
   }
-
-
 
   @Get('/mock')
   createMockBlogs() {
@@ -39,6 +51,11 @@ export class BlogsController {
   @Delete('all-blogs')
   removeAllBlogs() {
     return this.blogsService.removeAllBlogs();
+  }
+
+  @Get('comments/:id')
+  getCommentById(@Param('id') id: string) {
+    return this.blogsService.getCommentById(id);
   }
 
   @Post(':id/comments')
@@ -65,7 +82,11 @@ export class BlogsController {
     @Param('commentId') commentId: string,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
-    return this.blogsService.updateComment(blogId, commentId, updateCommentDto.content);
+    return this.blogsService.updateComment(
+      blogId,
+      commentId,
+      updateCommentDto.content,
+    );
   }
 
   @Delete(':id')
@@ -80,5 +101,4 @@ export class BlogsController {
   ) {
     return this.blogsService.removeComment(blogId, commentId);
   }
-
 }

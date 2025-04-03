@@ -38,16 +38,16 @@ Content-Type: application/json
 ]
 
 ### Add a comment to a blog
-POST http://localhost:8000/blogs/b41e2e67-e3c7-4a0f-a21c-3aeb600d8c9f/comments
+POST http://localhost:8000/blogs/72a26bff-57f5-43e3-976a-827de4abda8b/comments
 Content-Type: application/json
 
 {
-  "authorName": "Comment Author",
-  "content": "This is a comment on the blog"
+  "authorName": "Comment Author2",
+  "content": "This is a comment on the blog2"
 }
 
 ### Update a blog
-PATCH http://localhost:8000/blogs/b41e2e67-e3c7-4a0f-a21c-3aeb600d8c9f
+PATCH http://localhost:8000/blogs/72a26bff-57f5-43e3-976a-827de4abda8b
 Content-Type: application/json
 
 {
@@ -64,7 +64,7 @@ Content-Type: application/json
 }
 
 ### Delete a blog
-DELETE http://localhost:8000/blogs/your-blog-id-here
+DELETE http://localhost:8000/blogs/b41e2e67-e3c7-4a0f-a21c-3aeb600d8c9f
 
 ### Delete a comment
 DELETE http://localhost:8000/blogs/your-blog-id-here/comments/your-comment-id-here
@@ -98,3 +98,10 @@ Content-Type: application/json
 
 ### Delete a user by ID (existing route)
 DELETE http://localhost:8000/users/1
+
+### Queries in Azure Cosmos DB for NoSQL
+## Get all comments in blogs
+GET http://localhost:8000/blogs/comments-in-blogs
+
+### Get all blogs with comments
+GET http://localhost:8000/blogs/with-comments

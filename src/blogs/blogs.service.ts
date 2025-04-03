@@ -2,8 +2,8 @@ import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { DatabaseService } from 'src/database/database.service';
-import { Container } from '@azure/cosmos';
-import { Blog } from './entities/blog.entity';
+import { Container, SqlQuerySpec } from '@azure/cosmos';
+import { Blog, TComments } from './entities/blog.entity';
 
 @Injectable()
 export class BlogsService implements OnModuleInit {
@@ -91,13 +91,13 @@ export class BlogsService implements OnModuleInit {
     id: string,
     comment: { authorName: string; content: string },
   ): Promise<Blog> {
-    const { resource } = await this.blogsContainer.item(id, id).read();
-    const blog = resource as unknown as Blog;
+    const { resource } = await this.blogsContainer.item(id, id).read<Blog>();
+    const blog = resource as Blog;
     if (!blog) {
       throw new NotFoundException(`Blog not found with id: ${id}`);
     }
 
-    const newComment = {
+    const newComment:TComments = {
       id: crypto.randomUUID(),
       ...comment,
       createdAt: new Date(),
@@ -112,7 +112,7 @@ export class BlogsService implements OnModuleInit {
     blog.updatedAt = new Date();
     const { resource: updatedBlog } = await this.blogsContainer
       .item(id, id)
-      .replace(blog);
+      .replace<Blog>(blog);
     return updatedBlog as unknown as Blog;
   }
 
@@ -175,7 +175,7 @@ export class BlogsService implements OnModuleInit {
       .query(querySpec)
       .fetchAll();
 
-      const blogsToDelete = resources.filter((blog) => blog.id);
+    const blogsToDelete = resources.filter((blog) => blog.id);
     if (blogsToDelete.length === 0) {
       return { message: 'No blogs found to delete' };
     }
@@ -198,9 +198,9 @@ export class BlogsService implements OnModuleInit {
         }
       })
     );
-    
+
     const successCount = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
-    return { 
+    return {
       message: `${successCount} of ${resources.length} blogs deleted successfully`,
       details: results.map(r => r.status === 'fulfilled' ? r.value : { success: false, error: r.reason })
     };
@@ -357,6 +357,65 @@ export class BlogsService implements OnModuleInit {
       throw new NotFoundException('Blogs not found');
     }
     return res as unknown as Blog[];
+  }
+
+  // Self-join with a single item
+  // all comments in all blogs
+  async getAllCommentsInBlogs() {
+    const querySpec: SqlQuerySpec = {
+      query: `
+      SELECT 
+        b.id AS blogId,
+        b.comments 
+      FROM 
+        blogs b 
+      WHERE
+        IS_DEFINED(b.comments) AND ARRAY_LENGTH(b.comments) > 0
+      `,
+    };
+    const { resources } = await this.blogsContainer.items
+      .query(querySpec)
+      .fetchAll();
+    return resources;
+  }
+
+  // get all blogs with comments
+  async getAllBlogsWithComments(){
+    const querySpec: SqlQuerySpec = {
+      query: `
+      SELECT 
+        b.id AS blogId,
+        b.title AS blogTitle,
+        b.content AS blogContent,
+        b.authorId AS blogAuthorId,
+        b.isPublished AS blogIsPublished,
+        b.publishedAt AS blogPublishedAt,
+        b.createdAt AS blogCreatedAt,
+        b.updatedAt AS blogUpdatedAt,
+        b.tags AS blogTags,
+        b.comments 
+      FROM 
+        blogs b 
+      WHERE
+        IS_DEFINED(b.comments) AND ARRAY_LENGTH(b.comments) > 0
+      `,
+    };
+    const { resources } = await this.blogsContainer.items
+      .query(querySpec)
+      .fetchAll();
+    return resources;
+  }
+
+  // get all comments in a blog
+  async getCommentById(id: string) {
+    const querySpec: SqlQuerySpec = {
+      query: 'SELECT b.id AS blogId FROM blogs b JOIN c IN b.comments WHERE b.id = @id',
+      parameters: [{ name: '@id', value: id }],
+    };
+    const { resources } = await this.blogsContainer.items
+      .query(querySpec)
+      .fetchAll();
+    return resources;
   }
 }
 
