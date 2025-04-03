@@ -441,7 +441,7 @@ export class BlogsService implements OnModuleInit {
     // 2. Returns a single row per blog with all matching comments in a recentComments array
     // 3. Uses ARRAY_LENGTH() to filter out blogs with no recent comments
     // 4. Properly names the returned field as recentComments (plural) to indicate it's an array
-    
+
     const cutOffDate = new Date();
     cutOffDate.setDate(cutOffDate.getDate() - daysAgo || 7);
     const cutoffDateString = cutOffDate.toISOString();
@@ -494,26 +494,26 @@ export class BlogsService implements OnModuleInit {
     return resources;
   }
 
-  // Get Comment Activity Timeline
-  async getCommentTimeline(days: number = 30) {
-    const querySpec: SqlQuerySpec = {
-      query: `
-      SELECT 
-        DATE_TRUNC('day', c.createdAt) AS commentDate,
-        COUNT(1) AS commentCount
-      FROM blogs b
-      JOIN c IN b.comments
-      WHERE c.createdAt >= GetCurrentDateTime() - ${days * 24 * 60 * 60}
-      GROUP BY DATE_TRUNC('day', c.createdAt)
-      ORDER BY commentDate
-      `
-    };
-    const { resources } = await this.blogsContainer.items.query(querySpec).fetchAll();
-    return resources;
-  }
+  // // Get Comment Activity Timeline
+  // async getCommentTimeline(days: number = 30) {
+  //   const querySpec: SqlQuerySpec = {
+  //     query: `
+  //     SELECT 
+  //       DATE_TRUNC('day', c.createdAt) AS commentDate,
+  //       COUNT(1) AS commentCount
+  //     FROM blogs b
+  //     JOIN c IN b.comments
+  //     WHERE c.createdAt >= GetCurrentDateTime() - ${days * 24 * 60 * 60}
+  //     GROUP BY DATE_TRUNC('day', c.createdAt)
+  //     ORDER BY commentDate
+  //     `
+  //   };
+  //   const { resources } = await this.blogsContainer.items.query(querySpec).fetchAll();
+  //   return resources;
+  // }
 
   //Find Most Active Commenters
-  async getMostActiveCommenters(limit: number = 10) {
+  async getMostActiveAuthorComments(limit: number = 10) {
     const querySpec: SqlQuerySpec = {
       query: `
       SELECT 
@@ -522,9 +522,11 @@ export class BlogsService implements OnModuleInit {
       FROM blogs b
       JOIN c IN b.comments
       GROUP BY c.authorName
-      ORDER BY commentCount DESC
-      OFFSET 0 LIMIT ${limit}
-      `
+      OFFSET 0 LIMIT @limit
+      `,
+      parameters: [
+        { name: '@limit', value: limit }
+      ]
     };
     const { resources } = await this.blogsContainer.items.query(querySpec).fetchAll();
     return resources;

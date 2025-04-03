@@ -85,3 +85,7 @@ GET http://localhost:8000/blogs/recent-comments?daysAgo=1
 
 ### Get Most Active Blog Posts (By Comment Count)
 GET http://localhost:8000/blogs/most-active?top=5
+
+### get the active author of comments
+
+GET http://localhost:8000/blogs/most-active-author-comments?top=5

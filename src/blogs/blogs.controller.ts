@@ -70,6 +70,15 @@ export class BlogsController {
     return this.blogsService.getBlogsWithRecentComments(daysAgo);    
   }
 
+  //find the most active author of comments
+  // url: /blogs/most-active-author-comments?top=5
+  @Get('most-active-author-comments')
+  findMostActiveAuthorComments(
+    @Query('top', ParseIntPipe) top?: number,
+  ) {
+    return this.blogsService.getMostActiveAuthorComments(top);
+  }
+
   //Find Most Active Blog Posts (By Comment Count)
   // url: /blogs/most-active?top=5
   @Get('most-active')
