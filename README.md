@@ -3,10 +3,10 @@
 <img src="image/README/1743345911598.png" width="120" alt="Small Icon" />
 </p>
 
-# NestJS with Azure Cosmos DB CRUD Application
+# Queries in Azure Cosmos DB for NoSQL with NestJS
 
-A complete REST API example demonstrating CRUD operations using NestJS and Azure Cosmos DB.
-[Youtube Video found here](https://www.youtube.com/watch?v=r9I5BXb9mNw)
+A complete REST API example demonstrating CRUD operations and advanced query capabilities using NestJS and Azure Cosmos DB for NoSQL.
+[Youtube Video found here](https://youtube.com/your-workshop-video)
 
 ## Project Overview
 
@@ -15,8 +15,10 @@ This application demonstrates how to:
 - Build a RESTful API with NestJS framework
 - Connect to Azure Cosmos DB using the official SDK
 - Implement CRUD operations with TypeScript
+- Perform advanced queries with pagination, filtering, and sorting
+- Optimize queries for performance and cost efficiency
 - Handle configuration and environment variables
-- Implement proper error handling
+- Implement proper error handling and middleware
 
 ## Prerequisites
 
@@ -25,6 +27,8 @@ Before you begin, ensure you have the following installed:
 - [Node.js](https://nodejs.org/) (v20 or later)
 - [pnpm](https://pnpm.io/) (v9.7 or later) or npm v10 or later
 - An active Azure subscription with a Cosmos DB account
+- [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) (optional, for resource management)
+- [Postman](https://www.postman.com/downloads/) or similar tool for testing API endpoints
 
 ## Environment Setup
 
@@ -32,7 +36,7 @@ Before you begin, ensure you have the following installed:
 
    ```bash
    git clone <repository-url>
-   cd Nest-CosmosDB-CRUD
+   cd Nest-CosmosDB-Query
    ```
 2. Install dependencies:
 
@@ -68,7 +72,7 @@ pnpm add @nestjs/config @azure/cosmos uuid class-transformer class-validator @ne
 The application creates two containers in your Cosmos DB:
 
 - `users` - Stores user information
-- `memories` - Stores memory entries
+- `blogs` - Stores blog entries with nested comments
 
 Both containers are created automatically when the application starts for the first time.
 
@@ -87,15 +91,26 @@ pnpm run start:prod
 
 ## API Endpoints
 
-### Memories Resource
+### Blogs Resource
 
-| Method | Endpoint      | Description                    |
-| ------ | ------------- | ------------------------------ |
-| GET    | /memories     | Get all memories               |
-| GET    | /memories/:id | Get a specific memory by ID    |
-| POST   | /memories     | Create a new memory            |
-| PATCH  | /memories/:id | Update a specific memory by ID |
-| DELETE | /memories/:id | Delete a specific memory by ID |
+| Method | Endpoint                         | Description                                  |
+| ------ | -------------------------------- | -------------------------------------------- |
+| GET    | /blogs                           | Get all blogs                                |
+| GET    | /blogs/:id                       | Get a specific blog by ID                    |
+| POST   | /blogs                           | Create a new blog                            |
+| PATCH  | /blogs/:id                       | Update a specific blog by ID                 |
+| DELETE | /blogs/:id                       | Delete a specific blog by ID                 |
+| GET    | /blogs/with-comments             | Get all blogs with comments                  |
+| POST   | /blogs/many                      | Create multiple blogs at once                |
+| GET    | /blogs/mock                      | Create mock blogs for testing                |
+| DELETE | /blogs/all-blogs                 | Remove all blogs                             |
+| GET    | /blogs/recent-comments           | Find blogs with recent comments              |
+| GET    | /blogs/most-active-author-comments | Find most active comment authors           |
+| GET    | /blogs/most-active               | Find most active blogs by comment count      |
+| POST   | /blogs/:id/comments              | Add a comment to a blog                      |
+| PATCH  | /blogs/:blogId/comments/:commentId | Update a comment in a blog                 |
+| DELETE | /blogs/:blogId/comments/:commentId | Delete a comment from a blog               |
+| GET    | /blogs/:blogId/comments/:commentId | Get a specific comment from a blog         |
 
 ## Project Structure
 
@@ -105,11 +120,13 @@ src
 ├── main.ts                   # Application entry point
 ├── http-exception.filter.ts  # Global exception filter
 ├── database/                 # Database connection module
-│   └── database.service.ts   # Azure Cosmos DB service
-├── memories/                 # Memories module
+│   ├── database.service.ts   # Azure Cosmos DB service
+│   └── indexing-policies/    # Custom indexing policies
+├── blogs/                    # Blogs module
 │   ├── dto/                  # Data Transfer Objects
-│   ├── memories.controller.ts # REST API controller
-│   └── memories.service.ts   # Business logic
+│   ├── entities/             # Entity definitions
+│   ├── blogs.controller.ts   # REST API controller
+│   └── blogs.service.ts      # Business logic with query implementations
 └──
 ```
 
@@ -118,21 +135,3 @@ src
 This project includes several development tools:
 
 * **ESLint** : Linting with TypeScript support
-
-```
-pnpm run
-```
-
-* **Prettier** : Code formatting
-
-```
-pnpm run format
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
