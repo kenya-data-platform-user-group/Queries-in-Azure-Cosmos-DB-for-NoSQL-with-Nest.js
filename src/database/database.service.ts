@@ -8,6 +8,7 @@ import {
 } from '@azure/cosmos';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { indexingPolicy } from './indexing-policies/indexingPolicy';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -49,8 +50,9 @@ export class DatabaseService implements OnModuleInit {
         partitionKey: {
           paths: ['/id'],
           version: PartitionKeyDefinitionVersion.V2,
-          kind: PartitionKeyKind.Hash,
+          kind: PartitionKeyKind.Hash,          
         },
+        indexingPolicy: indexingPolicy
       });
 
     this.blogsContainer = blogsContainer;

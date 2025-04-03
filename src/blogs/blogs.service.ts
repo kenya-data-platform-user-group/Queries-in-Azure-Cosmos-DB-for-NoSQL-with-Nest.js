@@ -484,7 +484,6 @@ export class BlogsService implements OnModuleInit {
       ARRAY_LENGTH(b.comments) AS commentCount
       FROM blogs b
       WHERE IS_DEFINED(b.comments) AND ARRAY_LENGTH(b.comments) > 0
-      ORDER BY ARRAY_LENGTH(b.comments) DESC
       OFFSET 0 LIMIT @limit
       `,
       parameters: [
