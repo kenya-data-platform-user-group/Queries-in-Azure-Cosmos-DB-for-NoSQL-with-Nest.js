@@ -97,7 +97,7 @@ export class BlogsService implements OnModuleInit {
       throw new NotFoundException(`Blog not found with id: ${id}`);
     }
 
-    const newComment:TComments = {
+    const newComment: TComments = {
       id: crypto.randomUUID(),
       ...comment,
       createdAt: new Date(),
@@ -359,19 +359,23 @@ export class BlogsService implements OnModuleInit {
     return res as unknown as Blog[];
   }
 
-  // Self-join with a single item
-  // all comments in all blogs
-  async getAllCommentsInBlogs() {
+  // // get one comment in a blog
+  async getCommentById(blogId: string, commentId: string) {
     const querySpec: SqlQuerySpec = {
       query: `
-      SELECT 
+      SELECT
         b.id AS blogId,
-        b.comments 
+        c AS comment
       FROM 
         blogs b 
-      WHERE
-        IS_DEFINED(b.comments) AND ARRAY_LENGTH(b.comments) > 0
-      `,
+      JOIN 
+        c IN b.comments 
+      WHERE 
+        b.id = @blogId  AND c.id = @commentId`,
+      parameters: [
+        { name: '@blogId', value: blogId },
+        { name: '@commentId', value: commentId }
+      ],
     };
     const { resources } = await this.blogsContainer.items
       .query(querySpec)
@@ -379,8 +383,33 @@ export class BlogsService implements OnModuleInit {
     return resources;
   }
 
+  //Search Comments Across All Blogs [USE FULL-TEXT SEARCH INSTEAD]
+  // async searchAllComments(keyword: string) {
+  //   const querySpec: SqlQuerySpec = {
+  //     query: `
+  //     SELECT 
+  //       b.id AS blogId,
+  //       b.title AS blogTitle,
+  //       c.id AS commentId,
+  //       c.authorName,
+  //       c.content,
+  //       c.createdAt
+  //     FROM blogs b
+  //     JOIN c IN b.comments
+  //     WHERE CONTAINS(c.content, @keyword, true)
+  //     ORDER BY c.createdAt DESC
+  //     `,
+  //     parameters: [
+  //       { name: '@keyword', value: keyword }
+  //     ]
+  //   };
+  //   const { resources } = await this.blogsContainer.items.query(querySpec).fetchAll();
+  //   return resources;
+  // }
+
+
   // get all blogs with comments
-  async getAllBlogsWithComments(){
+  async getAllBlogsWithComments() {
     const querySpec: SqlQuerySpec = {
       query: `
       SELECT 
@@ -406,16 +435,81 @@ export class BlogsService implements OnModuleInit {
     return resources;
   }
 
-  // get all comments in a blog
-  async getCommentById(id: string) {
+  //Find Blogs with Recent Comments
+  async getBlogsWithRecentComments(daysAgo: number = 7) {
     const querySpec: SqlQuerySpec = {
-      query: 'SELECT b.id AS blogId FROM blogs b JOIN c IN b.comments WHERE b.id = @id',
-      parameters: [{ name: '@id', value: id }],
+      query: `
+      SELECT 
+        b.id AS blogId,
+        b.title,
+        b.content,
+        c AS recentComment
+      FROM blogs b
+      JOIN c IN b.comments
+      WHERE c.createdAt >= GetCurrentDateTime() - ${daysAgo * 24 * 60 * 60}
+      ORDER BY c.createdAt DESC
+      `
     };
-    const { resources } = await this.blogsContainer.items
-      .query(querySpec)
-      .fetchAll();
+    const { resources } = await this.blogsContainer.items.query(querySpec).fetchAll();
     return resources;
   }
+
+  //Find Most Active Blog Posts (By Comment Count)
+  async getMostActiveBlogs(limit: number = 5) {
+    const querySpec: SqlQuerySpec = {
+      query: `
+      SELECT 
+        b.id,
+        b.title,
+        COUNT(1) AS commentCount,
+        b.comments
+      FROM blogs b
+      JOIN c IN b.comments
+      GROUP BY b.id, b.title, b.comments
+      ORDER BY commentCount DESC
+      OFFSET 0 LIMIT ${limit}
+      `
+    };
+    const { resources } = await this.blogsContainer.items.query(querySpec).fetchAll();
+    return resources;
+  }
+
+  // Get Comment Activity Timeline
+  async getCommentTimeline(days: number = 30) {
+    const querySpec: SqlQuerySpec = {
+      query: `
+      SELECT 
+        DATE_TRUNC('day', c.createdAt) AS commentDate,
+        COUNT(1) AS commentCount
+      FROM blogs b
+      JOIN c IN b.comments
+      WHERE c.createdAt >= GetCurrentDateTime() - ${days * 24 * 60 * 60}
+      GROUP BY DATE_TRUNC('day', c.createdAt)
+      ORDER BY commentDate
+      `
+    };
+    const { resources } = await this.blogsContainer.items.query(querySpec).fetchAll();
+    return resources;
+  }
+
+  //Find Most Active Commenters
+  async getMostActiveCommenters(limit: number = 10) {
+    const querySpec: SqlQuerySpec = {
+      query: `
+      SELECT 
+        c.authorName,
+        COUNT(1) AS commentCount
+      FROM blogs b
+      JOIN c IN b.comments
+      GROUP BY c.authorName
+      ORDER BY commentCount DESC
+      OFFSET 0 LIMIT ${limit}
+      `
+    };
+    const { resources } = await this.blogsContainer.items.query(querySpec).fetchAll();
+    return resources;
+  }
+
+
 }
 

@@ -5,7 +5,7 @@ GET http://localhost:8000/blogs/mock
 GET http://localhost:8000/blogs
 
 ### Get a blog by ID
-GET http://localhost:8000/blogs/your-blog-id-here
+GET http://localhost:8000/blogs/72a26bff-57f5-43e3-976a-827de4abda8b
 
 ### Create a new blog
 POST http://localhost:8000/blogs
@@ -56,7 +56,7 @@ Content-Type: application/json
 }
 
 ### Update a comment
-PATCH http://localhost:8000/blogs/your-blog-id-here/comments/your-comment-id-here
+PATCH http://localhost:8000/blogs/72a26bff-57f5-43e3-976a-827de4abda8b/comments/867d6f4e-1a62-4c57-a997-9c02f93ea9e3
 Content-Type: application/json
 
 {
@@ -72,36 +72,11 @@ DELETE http://localhost:8000/blogs/your-blog-id-here/comments/your-comment-id-he
 ### Delete all blogs
 DELETE http://localhost:8000/blogs/all-blogs
 
-### Create a new user (existing route)
-POST http://localhost:8000/users
-Content-Type: application/json
-
-{
-  "name": "Kevin Comba",
-  "email": "example@email.com"
-}
-
-### Get all users (existing route)
-GET http://localhost:8000/users
-
-### Get a user by ID (existing route)
-GET http://localhost:8000/users/193d758b-f943-4fe4-aac8-e96e5f162b42
-
-### Update a user by ID (existing route)
-PATCH http://localhost:8000/users/193d758b-f943-4fe4-aac8-e96e5f162b43
-Content-Type: application/json
-
-{
-  "name": "2Kevin Comba",
-  "email": "example2@email.com"
-}
-
-### Delete a user by ID (existing route)
-DELETE http://localhost:8000/users/1
-
-### Queries in Azure Cosmos DB for NoSQL
-## Get all comments in blogs
-GET http://localhost:8000/blogs/comments-in-blogs
+### Queries in Azure Cosmos DB for NoSQL ###
 
 ### Get all blogs with comments
 GET http://localhost:8000/blogs/with-comments
+
+### Get a comment by ID
+# GET http://localhost:8000/blogs/72a26bff-57f5-43e3-976a-827de4abda8b/comments/867d6f4e-1a62-4c57-a997-9c02f93ea9e3
+GET http://localhost:8000/blogs/72a26bff-57f5-43e3-976a-827de4abda8b/comments/867d6f4e-1a62-4c57-a997-9c02f93ea9e3
