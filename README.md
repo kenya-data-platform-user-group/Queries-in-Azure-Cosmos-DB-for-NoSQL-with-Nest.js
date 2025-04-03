@@ -35,7 +35,7 @@ Before you begin, ensure you have the following installed:
 1. Clone the repository:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/kenya-data-platform-user-group/Queries-in-Azure-Cosmos-DB-for-NoSQL-with-Nest.js
    cd Nest-CosmosDB-Query
    ```
 2. Install dependencies:
@@ -93,24 +93,24 @@ pnpm run start:prod
 
 ### Blogs Resource
 
-| Method | Endpoint                         | Description                                  |
-| ------ | -------------------------------- | -------------------------------------------- |
-| GET    | /blogs                           | Get all blogs                                |
-| GET    | /blogs/:id                       | Get a specific blog by ID                    |
-| POST   | /blogs                           | Create a new blog                            |
-| PATCH  | /blogs/:id                       | Update a specific blog by ID                 |
-| DELETE | /blogs/:id                       | Delete a specific blog by ID                 |
-| GET    | /blogs/with-comments             | Get all blogs with comments                  |
-| POST   | /blogs/many                      | Create multiple blogs at once                |
-| GET    | /blogs/mock                      | Create mock blogs for testing                |
-| DELETE | /blogs/all-blogs                 | Remove all blogs                             |
-| GET    | /blogs/recent-comments           | Find blogs with recent comments              |
-| GET    | /blogs/most-active-author-comments | Find most active comment authors           |
-| GET    | /blogs/most-active               | Find most active blogs by comment count      |
-| POST   | /blogs/:id/comments              | Add a comment to a blog                      |
-| PATCH  | /blogs/:blogId/comments/:commentId | Update a comment in a blog                 |
-| DELETE | /blogs/:blogId/comments/:commentId | Delete a comment from a blog               |
-| GET    | /blogs/:blogId/comments/:commentId | Get a specific comment from a blog         |
+| Method | Endpoint                           | Description                             |
+| ------ | ---------------------------------- | --------------------------------------- |
+| GET    | /blogs                             | Get all blogs                           |
+| GET    | /blogs/:id                         | Get a specific blog by ID               |
+| POST   | /blogs                             | Create a new blog                       |
+| PATCH  | /blogs/:id                         | Update a specific blog by ID            |
+| DELETE | /blogs/:id                         | Delete a specific blog by ID            |
+| GET    | /blogs/with-comments               | Get all blogs with comments             |
+| POST   | /blogs/many                        | Create multiple blogs at once           |
+| GET    | /blogs/mock                        | Create mock blogs for testing           |
+| DELETE | /blogs/all-blogs                   | Remove all blogs                        |
+| GET    | /blogs/recent-comments             | Find blogs with recent comments         |
+| GET    | /blogs/most-active-author-comments | Find most active comment authors        |
+| GET    | /blogs/most-active                 | Find most active blogs by comment count |
+| POST   | /blogs/:id/comments                | Add a comment to a blog                 |
+| PATCH  | /blogs/:blogId/comments/:commentId | Update a comment in a blog              |
+| DELETE | /blogs/:blogId/comments/:commentId | Delete a comment from a blog            |
+| GET    | /blogs/:blogId/comments/:commentId | Get a specific comment from a blog      |
 
 ## Project Structure
 
